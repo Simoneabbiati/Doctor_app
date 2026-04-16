@@ -1,49 +1,73 @@
-# Workshop: Sviluppare la "Scrivania Intelligente" con l'AI
+# ✍️ Workshop: Scrivania Intelligente AI
+**Guida allo sviluppo di un Writing Companion con Gemini 2.5 Flash**
 
-Questo repository contiene il progetto sviluppato durante il workshop su **Google Canvas**. L'obiettivo è creare un'applicazione web per scrittori che sfrutta l'intelligenza artificiale per superare il blocco creativo.
+Benvenuti in questo workshop. Oggi trasformeremo un'idea di design in un'applicazione web funzionante e pubblicata online, capace di interagire con l'intelligenza artificiale per potenziare la scrittura.
 
 ---
 
-## 📅 Tabella di Marcia (90 Minuti)
+## 📅 Programma del Workshop (90 Minuti)
 
-| Tempo | Attività | Modulo |
+| Slot | Attività | Focus Tecnico |
 | :--- | :--- | :--- |
-| **00-15'** | Intro & Setup Account | Architettura & Registrazioni |
-| **15-30'** | Layout & Timer | Modulo 01: Pomodoro |
-| **30-50'** | Analisi Testo (API) | Modulo 02: Freewriting |
-| **50-70'** | Task Manager AI | Modulo 03: Scomponi il Mostro |
-| **70-80'** | Suggerimenti Dinamici | Modulo 04: Rientra nel Testo |
-| **80-90'** | Deploy & Q&A | Pubblicazione GitHub Pages |
+| **00-15'** | **Setup & Architettura** | Google Canvas, Account GitHub, API Gemini |
+| **15-30'** | **Layout & Modulo 01** | UI Minimalista (Tailwind) + Timer Pomodoro |
+| **30-50'** | **Modulo 02: Freewriting** | Analisi del testo e Prompt Engineering |
+| **50-70'** | **Modulo 03: Task Manager** | Scomposizione obiettivi (Logic AI) |
+| **70-80'** | **Modulo 04: Suggerimenti** | Trigger dinamici (Invio) e Ghost Text |
+| **80-90'** | **Deploy Finale** | Pubblicazione su GitHub Pages |
 
 ---
 
-## 🛠️ Architettura Tecnica
-- **Ambiente di Sviluppo:** [Google Canvas](https://canvas.google.com)
-- **Modello AI:** Gemini 2.5 Flash (integrazione nativa)
-- **Frontend:** React + Tailwind CSS
-- **Hosting:** GitHub Pages
+## 🏗️ 1. Architettura del Sistema
+
+L'applicazione è un **Single Page Tool** sviluppato in React. 
+- **Frontend:** Gestito tramite React (State Management) e Tailwind CSS (Styling).
+- **Intelligenza Artificiale:** Utilizziamo l'endpoint nativo di Google Canvas per interrogare **Gemini 2.5 Flash**.
+- **Integrazione:** La funzione `askAI` invia il testo dell'utente insieme a un *System Prompt* che definisce il comportamento dell'assistente.
 
 ---
 
-## 🚀 I Moduli dell'App
+## 💻 2. Sviluppo Moduli
 
-### 01. Pomodoro dello Studioso
-Logica di gestione del tempo (25/5) per sessioni di Deep Work. Include un campo "Intenzione" per focalizzare l'obiettivo prima di partire.
+### Modulo 01: Pomodoro dello Studioso (Frontend Generale)
+È il cuore della gestione del tempo. 
+- **Funzione:** Timer 25/5 per il Deep Work.
+- **Dettaglio:** Prima di ogni sessione, l'utente dichiara la sua "Intenzione". Questo crea un impegno psicologico che l'IA userà nei moduli successivi.
 
-### 02. Freewriting & Temi Chiave
-Cella di input per scrittura libera. L'AI analizza il testo e restituisce i nuclei tematici per ogni paragrafo.
+### Modulo 02: Freewriting & Temi Chiave
+Trasformiamo il "dump" di pensieri in struttura.
+- **Cella Input:** Area di testo libera.
+- **Cella Output:** Pannello laterale per i temi.
+- **Prompt AI:** *"Identifica i 3 nuclei tematici principali di questo testo e riassumili in concetti da 2 parole."*
 
-### 03. Scomponi il Mostro
-L'utente inserisce un obiettivo complesso e l'AI lo frammenta in 5 micro-task da 15 minuti l'uno.
+### Modulo 03: Scomponi il Mostro (Tasking)
+L'IA come strumento di project management.
+- **Input:** Un obiettivo macro (es: "Scrivere il capitolo 1").
+- **Output:** Lista interattiva di micro-task da 15 minuti.
+- **Prompt AI:** *"Agisci come un esperto di produttività. Dividi questo obiettivo in 5 azioni atomiche."*
 
-### 04. Rientra nel Testo
-Strumenti di analisi in tempo reale (word counter e speed timer). Premendo "Invio", l'AI suggerisce le parole successive per mantenere il flusso.
+### Modulo 04: Rientra nel Testo (Suggerimenti)
+Superare il blocco della pagina bianca in tempo reale.
+- **Meccanica:** Quando l'utente preme `Invio`, l'IA legge il paragrafo appena concluso.
+- **Output:** Suggerisce l'incipit del paragrafo successivo.
+- **Metriche:** Include un contatore di parole e un tachimetro della velocità di scrittura.
 
 ---
 
-## 🌐 Come visualizzare l'app
-Una volta completato il workshop, l'app sarà disponibile al link:
-`https://[TUO-UTENTE].github.io/[NOME-REPO]/`
+## 🚀 3. Istruzioni per il Deploy su GitHub
+
+1. **Repository:** Crea un nuovo repository chiamato `scrivania-intelligente`.
+2. **Upload:** Carica il file `index.html` creato durante il workshop.
+3. **Settings:** Vai in `Settings` -> `Pages`.
+4. **Build and Deployment:** Sotto *Branch*, seleziona `main` e clicca su `Save`.
+5. **Live:** Dopo circa 60 secondi, la tua app sarà online all'indirizzo `https://tuo-nome.github.io/scrivania-intelligente/`.
 
 ---
-*Workshop guidato da Simone Abbiati*
+
+## 📝 Note per gli Studenti
+- Non è necessaria alcuna carta di credito.
+- Il codice deve essere salvato costantemente.
+- Sperimentate con i **System Prompts** per cambiare la "personalità" della vostra scrivania.
+
+---
+*Creato per il Workshop AI Writing Companion - Google Canvas Environment*
