@@ -1,0 +1,248 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Play, Pause, RotateCcw, Coffee, Briefcase, Settings, Volume2, VolumeX, GraduationCap, Quote, FastForward } from 'lucide-react';
+
+const App = () => {
+  // Stati principali del timer
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isActive, setIsActive] = useState(false);
+  const [mode, setMode] = useState('work'); // 'work', 'short', 'long'
+  const [sessionsCompleted, setSessionsCompleted] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  
+  // Stato per le citazioni della tesi e animazione
+  const [thesisQuoteIndex, setThesisQuoteIndex] = useState(0);
+  const [fadeStatus, setFadeStatus] = useState('fade-in');
+
+  const thesisQuotes = [
+    "Ogni parola scritta è un passo in più verso il titolo di Dottore.",
+    "La bibliografia non si scriverà da sola, ma tu hai la forza per domarla.",
+    "Non deve essere perfetto, deve essere finito. La perfezione arriverà con le revisioni.",
+    "Il tuo contributo alla ricerca è unico. Continua a scavare.",
+    "Scrivere la tesi è una maratona, non uno sprint. Respira e prosegui.",
+    "Ricorda perché hai iniziato questo percorso: la tua curiosità ti guiderà.",
+    "Un paragrafo al giorno toglie la proroga di torno!",
+    "La tua tesi è la testimonianza della tua resilienza intellettuale.",
+    "Analizza i dati, scrivi i risultati, conquista il futuro.",
+    "Pensa alla soddisfazione di stampare l'ultima pagina."
+  ];
+
+  // Effetto per la rotazione automatica delle citazioni
+  useEffect(() => {
+    const quoteInterval = setInterval(() => {
+      setFadeStatus('fade-out');
+      setTimeout(() => {
+        setThesisQuoteIndex((prev) => (prev + 1) % thesisQuotes.length);
+        setFadeStatus('fade-in');
+      }, 500);
+    }, 3000);
+    return () => clearInterval(quoteInterval);
+  }, []);
+
+  const settings = {
+    work: 25 * 60,
+    short: 5 * 60,
+    long: 15 * 60
+  };
+
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (isActive && timeLeft > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      handleTimerComplete();
+    } else {
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [isActive, timeLeft]);
+
+  const handleTimerComplete = () => {
+    clearInterval(timerRef.current);
+    setIsActive(false);
+    if (!isMuted) playAlarm();
+
+    if (mode === 'work') {
+      const newSessions = sessionsCompleted + 1;
+      setSessionsCompleted(newSessions);
+      if (newSessions % 4 === 0) {
+        switchMode('long');
+      } else {
+        switchMode('short');
+      }
+    } else {
+      switchMode('work');
+    }
+  };
+
+  const playAlarm = () => {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    audio.play().catch(e => console.log("Audio play failed", e));
+  };
+
+  const switchMode = (newMode) => {
+    setMode(newMode);
+    setTimeLeft(settings[newMode]);
+    setIsActive(false);
+  };
+
+  const toggleTimer = () => setIsActive(!isActive);
+  const resetTimer = () => { setIsActive(false); setTimeLeft(settings[mode]); };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Colori stile Apple (San Francisco Design System)
+  const themes = {
+    work: 'bg-[#FF3B30]', // iOS System Red
+    short: 'bg-[#34C759]', // iOS System Green
+    long: 'bg-[#007AFF]'   // iOS System Blue
+  };
+
+  const accentColors = {
+    work: 'text-[#FF3B30]',
+    short: 'text-[#34C759]',
+    long: 'text-[#007AFF]'
+  };
+
+  const progress = ((settings[mode] - timeLeft) / settings[mode]) * 100;
+  const sessionsInCycle = sessionsCompleted % 4;
+
+  return (
+    <div className="min-h-screen bg-[#F2F2F7] flex items-center justify-center p-6 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
+      {/* Background Gradient Blur */}
+      <div className={`fixed inset-0 opacity-20 transition-colors duration-1000 ${themes[mode]}`} />
+      
+      <div className="relative bg-white/80 backdrop-blur-2xl rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/50 w-full max-w-[400px]">
+        
+        {/* Apple Style Header */}
+        <div className="flex justify-between items-center mb-10">
+          <button 
+            onClick={() => setIsMuted(!isMuted)}
+            className="p-2.5 bg-gray-100/50 hover:bg-gray-200/50 rounded-full transition-all text-gray-500"
+          >
+            {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          </button>
+          
+          <div className="flex flex-col items-end">
+            <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+              Progress
+            </div>
+            <div className="flex gap-1.5 p-1.5 bg-gray-100/50 rounded-full">
+              {[1, 2, 3, 4].map((step) => (
+                <div 
+                  key={step} 
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
+                    step <= sessionsInCycle ? themes.work : 'bg-gray-300'
+                  } ${step === 4 && sessionsInCycle === 0 && sessionsCompleted > 0 ? themes.long : ''}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Switcher - Segmented Control Style */}
+        <div className="bg-gray-100/50 p-1 rounded-2xl flex mb-10">
+          {['work', 'short', 'long'].map((m) => (
+            <button
+              key={m}
+              onClick={() => switchMode(m)}
+              className={`flex-1 py-2 text-[13px] font-medium rounded-xl transition-all ${
+                mode === m 
+                ? 'bg-white shadow-sm text-black' 
+                : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {m === 'work' ? 'Lavoro' : m === 'short' ? 'Pausa' : 'Lunga'}
+            </button>
+          ))}
+        </div>
+
+        {/* Timer Display */}
+        <div className="relative flex justify-center items-center mb-12">
+          <svg className="w-60 h-60 transform -rotate-90">
+            <circle
+              cx="120" cy="120" r="112"
+              stroke="#E5E5EA" strokeWidth="6" fill="transparent"
+            />
+            <circle
+              cx="120" cy="120" r="112"
+              stroke="currentColor" strokeWidth="6" fill="transparent"
+              strokeDasharray={2 * Math.PI * 112}
+              strokeDashoffset={2 * Math.PI * 112 * (1 - progress / 100)}
+              strokeLinecap="round"
+              className={`transition-all duration-1000 ease-out ${accentColors[mode]}`}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-[64px] font-light tracking-tight text-[#1C1C1E]">
+              {formatTime(timeLeft)}
+            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-400 -mt-2">
+              {mode === 'work' ? 'Concentrazione' : 'Riposo'}
+            </span>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="flex justify-between items-center px-4 mb-12">
+          <button
+            onClick={resetTimer}
+            className="p-4 bg-gray-100/80 text-gray-600 rounded-full hover:bg-gray-200 transition-all active:scale-90"
+          >
+            <RotateCcw size={22} />
+          </button>
+
+          <button
+            onClick={toggleTimer}
+            className={`w-20 h-20 flex items-center justify-center rounded-full text-white shadow-lg hover:brightness-110 active:scale-95 transition-all ${themes[mode]}`}
+          >
+            {isActive ? <Pause size={32} fill="currentColor" /> : <Play size={32} className="ml-1" fill="currentColor" />}
+          </button>
+
+          <button
+            onClick={() => handleTimerComplete()}
+            className="p-4 bg-gray-100/80 text-gray-600 rounded-full hover:bg-gray-200 transition-all active:scale-90"
+          >
+            <FastForward size={22} />
+          </button>
+        </div>
+
+        {/* Thesis Motivation Section - Glass Style */}
+        <div className="pt-6 border-t border-gray-100">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <GraduationCap size={16} className="text-gray-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Road to Ph.D.</span>
+          </div>
+          
+          <div className="min-h-[80px] flex items-center justify-center">
+            <p className={`text-[#3A3A3C] text-[15px] leading-snug text-center font-medium italic transition-all duration-700 ${
+              fadeStatus === 'fade-in' ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-sm scale-95'
+            }`}>
+              "{thesisQuotes[thesisQuoteIndex]}"
+            </p>
+          </div>
+          
+          <div className="w-full bg-gray-100 h-0.5 mt-4 rounded-full overflow-hidden">
+            <div 
+              className={`h-full ${themes[mode]} transition-all duration-[3000ms] ease-linear`}
+              style={{ width: fadeStatus === 'fade-in' ? '100%' : '0%' }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Info */}
+      <div className="fixed bottom-8 text-gray-400 text-[12px] font-medium flex items-center gap-2">
+        <span>Sessioni completate: {sessionsCompleted}</span>
+      </div>
+    </div>
+  );
+};
+
+export default App;
